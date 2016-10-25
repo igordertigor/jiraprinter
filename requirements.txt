@@ -1,5 +1,5 @@
 begins==0.9
 bottle==0.12.10
 Jinja2==2.8
-Markdown=2.6.7
-requests=2.11.1
+Markdown==2.6.7
+requests==2.11.1
