@@ -20,7 +20,9 @@ You can run the command line tool by calling
 
     python jira.py export <Ticket-Id> [<Ticket-Id> ...]
 
-and you can start the web-interface for selecting tickets and printing them by calling
+Here, angle brackets (`<>`) denote variable parameters and square brackets (`[]`) denote optional
+parameters. This is similar to unix `man` pages. You can start the web-interface for selecting
+tickets and printing them by calling
 
     $ python jira.py select
 
