@@ -12,6 +12,8 @@ import bottle
 
 logging.getLogger("requests").setLevel(logging.WARNING)
 
+DEFAULT_TEMPLATE = os.path.join(os.path.dirname(__file__), 'html', 'template.html')
+
 
 class Jira(object):
 
@@ -126,7 +128,7 @@ def selection_display():
 def printable():
     """Export a list of jira tickets to html"""
     template_name = bottle.request.forms.get('template')
-    with open(template_name if len(template_name) else 'html/template.html', 'r') as f:
+    with open(template_name if len(template_name) else DEFAULT_TEMPLATE, 'r') as f:
         template = Template(f.read())
 
     tickets = dict(bottle.request.forms)
@@ -138,7 +140,7 @@ def printable():
 
 @printer_app.route('/template', method='GET')
 def printer_template():
-    with open('html/template.html', 'r') as f:
+    with open(DEFAULT_TEMPLATE, 'r') as f:
         return f.read()
 
 
@@ -150,7 +152,7 @@ def select():
 
 @begin.subcommand()
 def export(outputfile: 'Name of output html file' ='tickets.html',
-           template: 'Name of jinja2 template' ='html/template.html',
+           template: 'Name of jinja2 template' =DEFAULT_TEMPLATE,
            *ticket_ids: 'Ids of tickets to convert'
            ):
     """Export a list of jira tickets to html"""
