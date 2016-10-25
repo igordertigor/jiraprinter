@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<style>
+.issue {
+    font-family: sans-serif;
+    width: 14cm;
+    margin: 2mm;
+    padding: 2mm;
+    border-style: solid;
+    border-width: 1px;
+    page-break-inside: avoid;
+}
+.epic-name {
+    font-style: italic;
+}
+</style>
+<body>
+{% for issue in issues %}
+<div class="issue">
+    {% if 'epic' in issue %}
+    <div class='epic-name'>{{ issue['epic']['summary'] }}</div>
+    {% endif %}
+    <div class='ticket-id'>Issue: {{ issue['ticket_id'] }}</div>
+    <h1>{{ issue['summary'] }}</h1>
+    {{ issue['description'] }}
+</div>
+{% endfor %}
+</body>
+</html>
