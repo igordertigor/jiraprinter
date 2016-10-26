@@ -20,7 +20,9 @@ You can run the command line tool by calling
 
     python jira.py export <Ticket-Id> [<Ticket-Id> ...]
 
-and you can start the web-interface for selecting tickets and printing them by calling
+Here, angle brackets (`<>`) denote variable parameters and square brackets (`[]`) denote optional
+parameters. This is similar to unix `man` pages. You can start the web-interface for selecting
+tickets and printing them by calling
 
     $ python jira.py select
 
@@ -45,3 +47,7 @@ you use bash). To do so, add the following lines to your `~/.bashrc` file.
     export JIRACREDENTIALS=fowkeofoakjdfolai
 
 Obviously, both the URL and the credentials are completely made up.
+
+## Authentication error
+
+Error messages are typically rather long and complex. If you see a 401 status code somewhere at the end of the stacktrace, that means that you're not correctly authenticated. In that case, you might want to check your user name and password.
