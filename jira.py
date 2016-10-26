@@ -99,6 +99,7 @@ class JiraSearcher(Jira):
 
     def get_raw_query(self, params):
         query = self.assemble_query_string(params)
+        logging.info('Using query string %s', query)
         response = requests.get(self.url + '/search?jql=' + query,
                                 headers=self.headers)
         if response.ok:
@@ -106,7 +107,9 @@ class JiraSearcher(Jira):
         raise requests.exceptions.HTTPError('{} (Error code={})'.format(response.content, response.status_code))
 
     def assemble_query_string(self, params):
-        return '&'.join(['{}={}'.format(key, value) for key, value in params.items()])
+        maxResults = params.pop('maxResults', 100)
+        return '&'.join(['{}={}'.format(key, value) for key, value in params.items()] +
+                        ['maxResults={}'.format(maxResults)])
 
 
 def show_fields(ticket_description):
@@ -118,10 +121,18 @@ printer_app = bottle.Bottle()
 
 @printer_app.route('/')
 def selection_display():
-    jira_searcher = JiraSearcher(CREDENTIALS, URL)
-    info = jira_searcher.search({'component': 'midas'})
     with open('html/selection_display.html', 'r') as f:
-        return Template(f.read()).render(tickets=info)
+        return Template(f.read()).render()
+
+
+@printer_app.route('/columns/')
+def get_columns():
+    query = bottle.request.query['query']
+    query = dict(q.split("=") for q in query.split(' '))
+    jira_searcher = JiraSearcher(CREDENTIALS, URL)
+    info = jira_searcher.search(query)
+    logging.info('Found {} tickets'.format(len(info)))
+    return {'tickets': info}
 
 
 @printer_app.route('/printable', method='POST')

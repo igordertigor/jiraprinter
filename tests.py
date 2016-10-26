@@ -123,11 +123,16 @@ class TestJiraSearcher(unittest.TestCase):
 
     def test_assemble_query_with_single_parameter(self):
         query = self.jira_object.assemble_query_string({'component': 'mycomponent'})
-        self.assertEqual(query, 'component=mycomponent')
+        self.assertEqual(query, 'component=mycomponent&maxResults=100')
 
     def test_assemble_query_with_two_parameters(self):
         query = self.jira_object.assemble_query_string({'component': 'mycomponent', 'project': 'myproject'})
-        self.assertIn(query, ['component=mycomponent&project=myproject', 'project=myproject&component=mycomponent'])
+        self.assertIn(query, ['component=mycomponent&project=myproject&maxResults=100',
+                              'project=myproject&component=mycomponent&maxResults=100'])
+
+    def test_assemble_query_with_specified_maxResults(self):
+        query = self.jira_object.assemble_query_string({'component': 'mycomponent', 'maxResults': 2})
+        self.assertEqual(query, 'component=mycomponent&maxResults=2')
 
     def test_search_returns_all_issues(self):
         with mock.patch('jira.JiraSearcher.get_raw_query', self.mock_raw_issues):

@@ -14,27 +14,23 @@
             <div>
                 Layout of tickets is defined by a <a href="/template">default template</a>. To specify an alternative ticket layout, upload it here:
                 <input type="file" name="template" value="template.html" />
+                <input id="queryfield" type="text" name="query" value="component=midas" size="50"/>
                 <input class='btn btn-primary' type="submit" value="Printable view">
             </div>
 
-            <div class="col-sm-4">
+            <div id="column-1" class="col-sm-4">
                 <ul class="list-group">
-                {% for ticket in tickets %}
-                <li class="list-group-item"><input type="checkbox" name="{{ ticket['key'] }}" value="{{ ticket['key'] }}"/> <b>{{ ticket['key'] }}</b>:
-                        {{ ticket['summary'] }}
-                        (Team: {{ ticket['team'] }}
-                        {% if ticket['epic'] %}, Epic: {{ ticket['epic'] }}{% endif %}
-                        )
-                </li>
-                        {% if loop.index == 20 or loop.index == 40 %}
                 </ul>
             </div>
-            <div class="col-sm-4">
+            <div id="column-2" class="col-sm-4">
                 <ul class="list-group">
-                        {% endif %}
-                {% endfor %}
                 </ul>
             </div>
+            <div id="column-3" class="col-sm-4">
+                <ul class="list-group">
+                </ul>
+            </div>
+
         </form>
 
 
@@ -42,6 +38,57 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <!-- Latest compiled and minified JavaScript -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <script>
+$('document').ready(function() {
+    function format_entry (entry) {
+        var list_html = "<li class='list-group-item'>";
+        list_html += '<input type="checkbox" name="' + entry.key + '" value="' + entry.key + '"/> ';
+        list_html += "<b>" + entry.key + "</b>" + entry.summary + " (team: " + entry.team;
+        if (entry.epic != null) {
+            list_html += ", epic: " + entry.epic;
+        }
+        list_html += ")</li>\n";
 
+        return list_html;
+    };
+
+    function fill_columns () {
+        var query = $("#queryfield").val();
+
+        $.ajax({
+            url: "/columns/?query=" + encodeURIComponent(query),
+            success: function(response) {
+                var number_of_entries = response.tickets.length;
+                var entries_per_column = Math.ceil(number_of_entries / 3);
+                console.log("Number of entries: " + number_of_entries);
+                console.log("Entries per column: " + entries_per_column);
+
+                var list_html = "";
+                var column_idx = 0;
+                for (k=0; k<number_of_entries; k++) {
+                    if ((k % entries_per_column) == 0) {
+                        column_idx += 1;
+                        $("#column-" + column_idx + " ul").html("");
+                    }
+
+                    entry = response.tickets[k];
+                    list_html = format_entry(entry);
+
+                    $("#column-" + column_idx + " ul").append(list_html);
+                }
+            }
+        });
+    };
+
+    fill_columns();
+
+    $("#queryfield").keyup(function() {
+        var query = $("#queryfield").val();
+        if (query.length > 3) {
+            fill_columns();
+        }
+    });
+});
+        </script>
     </body>
 </html>
