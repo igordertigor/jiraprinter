@@ -108,7 +108,7 @@ class JiraSearcher(Jira):
         raise requests.exceptions.HTTPError('{} (Error code={})'.format(response.content, response.status_code))
 
     def assemble_query_string(self, params):
-        maxResults = params.pop('maxResults', 100)
+        maxResults = params.pop('maxResults', 60)
         return '&'.join(['{}={}'.format(key, value) for key, value in params.items()] +
                         ['maxResults={}'.format(maxResults)])
 
