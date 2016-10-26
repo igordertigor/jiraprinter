@@ -43,7 +43,7 @@ $('document').ready(function() {
     function format_entry (entry) {
         var list_html = "<li class='list-group-item'>";
         list_html += '<input type="checkbox" name="' + entry.key + '" value="' + entry.key + '"/> ';
-        list_html += "<b>" + entry.key + "</b>" + entry.summary + " (team: " + entry.team;
+        list_html += "<b>" + entry.key + "</b> " + entry.summary + " (team: " + entry.team;
         if (entry.epic != null) {
             list_html += ", epic: " + entry.epic;
         }

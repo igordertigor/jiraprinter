@@ -68,6 +68,7 @@ class JiraPrinter(Jira):
                                  r'#'*i + ' ',
                                  description)
         description = re.sub(r'^(\*\s)', r'- ', description, re.MULTILINE)
+        description = re.sub(r'^(\+\s)', r'- ', description, re.MULTILINE)
         return markdown.markdown(description)
 
     def get_epic_name(self, ticket):
@@ -144,6 +145,7 @@ def printable():
 
     tickets = dict(bottle.request.forms)
     del tickets['template']
+    del tickets['query']
     ticket_ids = [ticket for ticket in tickets]
     jira_printer = JiraPrinter(CREDENTIALS, URL, template)
     return jira_printer.process(ticket_ids)
