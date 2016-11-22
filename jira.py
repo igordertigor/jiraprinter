@@ -95,7 +95,7 @@ class JiraSearcher(Jira):
             fields = issue['fields']
             info.append({'key': issue['key'],
                          'summary': fields['summary'],
-                         'team': fields['components'][0]['name'],
+                         'team': 'unknown',
                          'epic': fields[self.epic_id_field]
                          })
         return info
