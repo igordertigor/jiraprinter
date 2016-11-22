@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import base64
 import shlex
+
 import requests
 import markdown
 from jinja2 import Template
