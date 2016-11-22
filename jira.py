@@ -110,7 +110,8 @@ class JiraSearcher(Jira):
         raise requests.exceptions.HTTPError('{} (Error code={})'.format(response.content, response.status_code))
 
     def assemble_query_string(self, params):
-        return urlencode({key: '"{}"'.format(value) if ' ' in value else value for key, value in params.items()})
+        surrounded_by_quotes = {key: '"{}"'.format(value) if ' ' in value else value for key, value in params.items()}
+        return '&'.join(['{}={}'.format(key, value.replace(' ', '+')) for key, value in surrounded_by_quotes.items()])
 
 
 def show_fields(ticket_description):
