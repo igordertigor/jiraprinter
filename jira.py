@@ -10,6 +10,7 @@ import os
 import begin
 import logging
 import bottle
+from urllib.parse import urlencode
 
 logging.getLogger("requests").setLevel(logging.WARNING)
 
@@ -109,9 +110,7 @@ class JiraSearcher(Jira):
         raise requests.exceptions.HTTPError('{} (Error code={})'.format(response.content, response.status_code))
 
     def assemble_query_string(self, params):
-        maxResults = params.pop('maxResults', 60)
-        return '&'.join(['{}={}'.format(key, value) for key, value in params.items()] +
-                        ['maxResults={}'.format(maxResults)])
+        return urlencode({key: '"{}"'.format(value) if ' ' in value else value for key, value in params.items()})
 
 
 def show_fields(ticket_description):
