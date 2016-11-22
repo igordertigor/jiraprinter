@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import base64
+import shlex
 import requests
 import markdown
 from jinja2 import Template
@@ -129,7 +130,7 @@ def selection_display():
 @printer_app.route('/columns/')
 def get_columns():
     query = bottle.request.query['query']
-    query = dict(q.split("=") for q in query.split(' '))
+    query = dict(q.split("=") for q in shlex.split(query))
     jira_searcher = JiraSearcher(CREDENTIALS, URL)
     info = jira_searcher.search(query)
     logging.info('Found {} tickets'.format(len(info)))
