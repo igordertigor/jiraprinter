@@ -10,7 +10,6 @@ import os
 import begin
 import logging
 import bottle
-from urllib.parse import urlencode
 
 logging.getLogger("requests").setLevel(logging.WARNING)
 
