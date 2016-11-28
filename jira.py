@@ -14,6 +14,10 @@ import bottle
 logging.getLogger("requests").setLevel(logging.WARNING)
 
 DEFAULT_TEMPLATE = os.path.join(os.path.dirname(__file__), 'html', 'template.html')
+DEFAULT_SEARCH_QUERY = {
+    'project': 'Article Sales Forecast',
+    'sprint': 'Midas Sprint 4',
+}
 
 
 class Jira(object):
@@ -123,7 +127,8 @@ printer_app = bottle.Bottle()
 @printer_app.route('/')
 def selection_display():
     with open('html/selection_display.html', 'r') as f:
-        return Template(f.read()).render()
+        search_string = ' '.join(["{}='{}'".format(key, value) for key, value in DEFAULT_SEARCH_QUERY.items()])
+        return Template(f.read()).render(search_string=search_string)
 
 
 @printer_app.route('/columns/')
