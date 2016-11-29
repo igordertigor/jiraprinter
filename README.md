@@ -53,3 +53,8 @@ Obviously, both the URL and the credentials are completely made up.
 ## Authentication error
 
 Error messages are typically rather long and complex. If you see a 401 status code somewhere at the end of the stacktrace, that means that you're not correctly authenticated. In that case, you might want to check your user name and password.
+
+
+## Travis
+
+Test status on current master: ![build status](https://travis-ci.org/igordertigor/jiraprinter.svg?branch=master)
