@@ -113,8 +113,13 @@ class JiraSearcher(Jira):
         raise requests.exceptions.HTTPError('{} (Error code={})'.format(response.content, response.status_code))
 
     def assemble_query_string(self, params):
-        surrounded_by_quotes = {key: '"{}"'.format(value) if ' ' in value else value for key, value in params.items()}
-        return '&'.join(['{}={}'.format(key, value.replace(' ', '+')) for key, value in surrounded_by_quotes.items()])
+        maxresults = params.pop('maxResults', 100)
+        surrounded_by_quotes = {key: '"{}"'.format(value)
+                                if ' ' in str(value) else value
+                                for key, value in params.items()}
+        query = '&'.join(['{}={}'.format(key, str(value).replace(' ', '+'))
+                         for key, value in surrounded_by_quotes.items()])
+        return query + '&maxResults={}'.format(maxresults)
 
 
 def show_fields(ticket_description):
