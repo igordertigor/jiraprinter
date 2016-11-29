@@ -1,5 +1,8 @@
 import unittest
-from unittest import mock
+try:
+    from unittest import mock
+except ImportError:
+    import mock
 
 from collections import namedtuple
 from jinja2 import Template
