@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-import base64
+import shlex
+
 import requests
 import markdown
 from jinja2 import Template
@@ -13,6 +14,10 @@ import bottle
 logging.getLogger("requests").setLevel(logging.WARNING)
 
 DEFAULT_TEMPLATE = os.path.join(os.path.dirname(__file__), 'html', 'template.html')
+DEFAULT_SEARCH_QUERY = {
+    'project': 'Article Sales Forecast',
+    'sprint': 'Midas Sprint 4',
+}
 
 
 class Jira(object):
@@ -93,7 +98,7 @@ class JiraSearcher(Jira):
             fields = issue['fields']
             info.append({'key': issue['key'],
                          'summary': fields['summary'],
-                         'team': fields['components'][0]['name'],
+                         'team': 'unknown',
                          'epic': fields[self.epic_id_field]
                          })
         return info
@@ -108,9 +113,8 @@ class JiraSearcher(Jira):
         raise requests.exceptions.HTTPError('{} (Error code={})'.format(response.content, response.status_code))
 
     def assemble_query_string(self, params):
-        maxResults = params.pop('maxResults', 60)
-        return '&'.join(['{}={}'.format(key, value) for key, value in params.items()] +
-                        ['maxResults={}'.format(maxResults)])
+        surrounded_by_quotes = {key: '"{}"'.format(value) if ' ' in value else value for key, value in params.items()}
+        return '&'.join(['{}={}'.format(key, value.replace(' ', '+')) for key, value in surrounded_by_quotes.items()])
 
 
 def show_fields(ticket_description):
@@ -123,13 +127,14 @@ printer_app = bottle.Bottle()
 @printer_app.route('/')
 def selection_display():
     with open('html/selection_display.html', 'r') as f:
-        return Template(f.read()).render()
+        search_string = ' '.join(["{}='{}'".format(key, value) for key, value in DEFAULT_SEARCH_QUERY.items()])
+        return Template(f.read()).render(search_string=search_string)
 
 
 @printer_app.route('/columns/')
 def get_columns():
     query = bottle.request.query['query']
-    query = dict(q.split("=") for q in query.split(' '))
+    query = dict(q.split("=") for q in shlex.split(query))
     jira_searcher = JiraSearcher(CREDENTIALS, URL)
     info = jira_searcher.search(query)
     logging.info('Found {} tickets'.format(len(info)))
