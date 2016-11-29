@@ -7,6 +7,8 @@ friendly way.
 
 ## Getting started
 
+The jiraprinter works on python3 only.
+
 Set up a virtual environment
 
     $ mkvirtualenv jiraprinter
