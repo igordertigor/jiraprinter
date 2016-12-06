@@ -9,24 +9,21 @@ friendly way.
 
 The jiraprinter works on python3 only.
 
-Set up a virtual environment
+Jiraprinter is on pypi, so you can simply run
 
-    $ mkvirtualenv jiraprinter
+    pip install jiraprinter
 
-and install the requirements into that virtual environment
-
-    $ workon jiraprinter
-    $ pip install -r requirements.txt
+To install it. This will also create the two commands `jira.py` and `prepare_token` used below.
 
 You can run the command line tool by calling
 
-    python jira.py export <Ticket-Id> [<Ticket-Id> ...]
+    $ jira.py export <Ticket-Id> [<Ticket-Id> ...]
 
 Here, angle brackets (`<>`) denote variable parameters and square brackets (`[]`) denote optional
 parameters. This is similar to unix `man` pages. You can start the web-interface for selecting
 tickets and printing them by calling
 
-    $ python jira.py select
+    $ jira.py select
 
 The web-interface will then be available at `localhost:8080`.
 
@@ -36,7 +33,7 @@ It is recommended that you put the URL of your jira server as well as your
 credentials into separate environment variables. Your user credentials need to
 be passed in base 64 encoding, which can be done using the `prepare_token.py` script:
 
-    $ ./prepare_token.py
+    $ prepare_token.py
     Please enter your jira user name: myname
     Please enter your jira password:
     fowkeofoakjdfolai
