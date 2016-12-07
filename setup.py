@@ -16,7 +16,7 @@ setup(
     author='Ingo Fruend',
     author_email='ingo.fruend@twentybn.com',
     description='Simple printing interface for jira',
-    version='0.0.1'
+    version='0.0.1',
     license='MIT',
     keywords='jira printing',
     py_modules=['jira'],
