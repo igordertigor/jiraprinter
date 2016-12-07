@@ -4,8 +4,12 @@ from setuptools import setup
 
 
 def read(fname):
-    with open(fname) as f:
-        return f.read()
+    try:
+        import pypandoc
+        return pypandoc.convert(fname, 'rst')
+    except ImportError:
+        with open(fname) as f:
+            return f.read()
 
 setup(
     name='jiraprinter',
