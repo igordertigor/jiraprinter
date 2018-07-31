@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 def read(fname):
@@ -19,13 +19,17 @@ setup(
     version='0.0.1',
     license='MIT',
     keywords='jira printing',
-    py_modules=['jira'],
     install_requires=['bottle', 'Jinja2', 'begins'],
     long_description=read('README.md'),
+    packages=find_packages(),
     entry_points={
-        'console_scripts': ['prepare-jiratoken=prepare_token:main'],
+        'console_scripts': [
+            'prepare_token.py   =   jiraprinter.prepare_token:main'
+        ]
     },
-    scripts=['jira.py'],
+    package_data={'jiraprinter': ['html/*.html']},
+    include_package_data=True,
+    scripts=['jiraprinter/jira.py'],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: End Users/Desktop',

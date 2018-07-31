@@ -1,3 +1,4 @@
+import os
 import unittest
 try:
     from unittest import mock
@@ -8,7 +9,8 @@ from collections import namedtuple
 from jinja2 import Template
 import requests
 
-import jira
+from jiraprinter.jira import Jira, JiraPrinter, JiraSearcher
+from jiraprinter.html.html_path import HTML_PATH
 
 MockResponse = namedtuple('MockResponse', ['ok', 'json', 'content', 'status_code'])
 
@@ -29,7 +31,7 @@ class MockGet(object):
 class TestJiraBase(unittest.TestCase):
 
     def setUp(self):
-        self.jira_object = jira.Jira('ldfkjals', 'https://jira.mycompany/rest/api/2')
+        self.jira_object = Jira('ldfkjals', 'https://jira.mycompany/rest/api/2')
 
     def test_headers_have_correct_keys(self):
         self.assertIn('Authorization', self.jira_object.headers)
@@ -39,8 +41,8 @@ class TestJiraBase(unittest.TestCase):
 class TestJiraPrinter(unittest.TestCase):
 
     def setUp(self):
-        with open('html/template.html', 'r') as f:
-            self.jira_object = jira.JiraPrinter(
+        with open(os.path.join(HTML_PATH, 'template.html'), 'r') as f:
+            self.jira_object = JiraPrinter(
                 'ldfkjals', 'https://jira.mycompany/rest/api/2',
                 Template(f.read()))
 
@@ -54,7 +56,7 @@ class TestJiraPrinter(unittest.TestCase):
             MockResponse(False, None, 'some content', 404),
         ])
 
-        with mock.patch('jira.requests.get', mock_get):
+        with mock.patch('jiraprinter.jira.requests.get', mock_get):
             rendered = self.jira_object.process(['TICKET-1234'])
 
         self.assertIn('TICKET-1234', rendered)
@@ -73,7 +75,7 @@ class TestJiraPrinter(unittest.TestCase):
             MockResponse(True, lambda: {'fields': epic_fields}, '', 200),
         ])
 
-        with mock.patch('jira.requests.get', mock_get):
+        with mock.patch('jiraprinter.jira.requests.get', mock_get):
             self.jira_object.process(['TICKET-1234'])
 
         # We call the API twice: First for the ticket, then for the epic
@@ -93,7 +95,7 @@ class TestJiraPrinter(unittest.TestCase):
             MockResponse(False, None, '', 404),
         ])
 
-        with mock.patch('jira.requests.get', mock_get):
+        with mock.patch('jiraprinter.jira.requests.get', mock_get):
             output = self.jira_object.process(['TICKET-1', 'TICKET-2'])
 
         self.assertIn('TICKET-1', output)
@@ -102,19 +104,19 @@ class TestJiraPrinter(unittest.TestCase):
     def test_get_raw_issue_with_ok_response_returns_fields(self):
         mock_get = MockGet([MockResponse(True, lambda: {'fields': 'ok'}, '', 200)])
 
-        with mock.patch('jira.requests.get', mock_get):
+        with mock.patch('jiraprinter.jira.requests.get', mock_get):
             self.assertEqual(self.jira_object.get_raw_issue('ticket_id'), 'ok')
 
     def test_get_raw_issue_with_non_ok_response_raises_error(self):
         mock_get = MockGet([MockResponse(False, '', 'ExpectedError', 404)])
-        with mock.patch('jira.requests.get', mock_get):
+        with mock.patch('jiraprinter.jira.requests.get', mock_get):
             self.assertRaises(requests.exceptions.HTTPError, lambda: self.jira_object.get_raw_issue('ticket_id'))
 
 
 class TestJiraSearcher(unittest.TestCase):
 
     def setUp(self):
-        self.jira_object = jira.JiraSearcher('ldfalk', '')
+        self.jira_object = JiraSearcher('ldfalk', '')
 
     def mock_raw_issues(self, *args, **kwargs):
         dummy_component = [{'name': 'test'}]
@@ -138,12 +140,12 @@ class TestJiraSearcher(unittest.TestCase):
         self.assertEqual(query, 'component=mycomponent&maxResults=2')
 
     def test_search_returns_all_issues(self):
-        with mock.patch('jira.JiraSearcher.get_raw_query', self.mock_raw_issues):
+        with mock.patch('jiraprinter.jira.JiraSearcher.get_raw_query', self.mock_raw_issues):
             issues = self.jira_object.search({})
         self.assertEqual(len(issues), 3)
 
     def test_search_reassembles_issues_to_flat_format(self):
-        with mock.patch('jira.JiraSearcher.get_raw_query', self.mock_raw_issues):
+        with mock.patch('jiraprinter.jira.JiraSearcher.get_raw_query', self.mock_raw_issues):
             issues = self.jira_object.search({})
         for issue in issues:
             self.assertIn('key', issue.keys())

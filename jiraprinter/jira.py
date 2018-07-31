@@ -11,9 +11,11 @@ import begin
 import logging
 import bottle
 
+from jiraprinter.html.html_path import HTML_PATH
+
 logging.getLogger("requests").setLevel(logging.WARNING)
 
-DEFAULT_TEMPLATE = os.path.join(os.path.dirname(__file__), 'html', 'template.html')
+DEFAULT_TEMPLATE = os.path.join(HTML_PATH, 'template.html')
 DEFAULT_SEARCH_QUERY = {
     'project': 'Article Sales Forecast',
     'sprint': 'Midas Sprint 4',
@@ -131,7 +133,8 @@ printer_app = bottle.Bottle()
 
 @printer_app.route('/')
 def selection_display():
-    with open('html/selection_display.html', 'r') as f:
+    select_path = os.path.join(HTML_PATH, 'selection_display.html')
+    with open(select_path, 'r') as f:
         search_string = ' '.join(["{}='{}'".format(key, value) for key, value in DEFAULT_SEARCH_QUERY.items()])
         return Template(f.read()).render(search_string=search_string)
 
