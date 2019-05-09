@@ -1,6 +1,6 @@
 begins==0.9
 bottle==0.12.10
-Jinja2==2.8
+Jinja2>=2.10.1
 Markdown==2.6.7
-requests==2.11.1
+requests>=2.20.0
 mock==2.0.0
